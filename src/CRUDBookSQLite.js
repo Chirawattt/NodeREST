@@ -5,12 +5,12 @@
 // Test with Postman
 
 const express = require('express');
-const sqlite3 = require('sqlite3'); // include sqlite3 library //*
+const sqlite3 = require('sqlite3');
 const app = express();
 
 
 // connect to database
-const db = new sqlite3.Database('./Database/Book.sqlite'); //*
+const db = new sqlite3.Database('./Database/Book.sqlite');
 
 // parse incoming requests
 app.use(express.json());
@@ -19,7 +19,7 @@ app.use(express.json());
 db.run(`CREATE TABLE IF NOT EXISTS books (
     id INTEGER PRIMARY KEY,
     title TEXT,
-    author TEXT
+    author TEXT,
 )`);
 
 // route to get all books
@@ -39,10 +39,10 @@ app.get('/books/:id', (req,res) => {
         if (err){
             res.status(500).send(err);
         }else {
-            if (!rows) {
+            if (!row) {
                 res.status(404).send('Book not found');
             } else {
-                res.json(rows);
+                res.json(row);
             }
         }
     });
@@ -51,7 +51,7 @@ app.get('/books/:id', (req,res) => {
 // route to create a new book
 app.post('/books', (req,res) => {
     const book = req.body;
-    db.run('INSERT INTO books (title, author) VALUES (?, ?)', book.title, book.author, function(err) {
+    db.all('INSERT INTO books (title, author) VALUES (?, ?)', book.title, book.author, function(err) {
         if (err){
             res.status(500).send(err);
         }else {
@@ -73,16 +73,3 @@ app.put('/books/:id', (req,res) => {
     });
 });
 
-// route to delete a book
-app.delete('/books/:id', (req, res) => {
-    db.run('DELETE FROM books WHERE id = ?', req.params.id, function(err) {
-        if (err) {
-            res.status(500).send(err);
-        } else {
-            res.send({});
-        }
-    });
-});
-
-const port = process.env.PORT || 3000;
-app.listen(port, () => { console.log(`Example app listening at http://localhost:${port}`); });
