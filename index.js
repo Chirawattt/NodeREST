@@ -63,25 +63,39 @@ app.post('/books', (req,res) => {
 
 // route to update a book
 app.put('/books/:id', (req,res) => {
-    const book = req.body;
-    db.run('UPDATE books SET title = ?, author = ? WHERE id = ?', book.title, book.author, req.params.id, function(err) {
-        if(err) {
+    // check if the book exists?
+    db.get('SELECT * FROM books WHERE id = ?', req.params.id, (err,existingBook) => {
+        if (err) {
             res.status(500).send(err);
-        }else {
-            res.send(book);
+        } else {
+            if (!existingBook) res.status(404).send('Book not found');
+            else {
+                // Book exists, proceed with the update
+                const book = req.body;
+                db.run('UPDATE books SET title = ?, author = ? WHERE id = ?', book.title, book.author, req.params.id, function(err) {
+                    if(err) res.status(500).send(err);
+                    else res.send(book);
+                });
+            }
         }
-    });
+    })
 });
 
 // route to delete a book
 app.delete('/books/:id', (req, res) => {
-    db.run('DELETE FROM books WHERE id = ?', req.params.id, function(err) {
-        if (err) {
-            res.status(500).send(err);
-        } else {
-            res.send({});
+    db.get('SELECT * FROM books WHERE id = ?', req.params.id, (err, existingBook) => {
+        if (err) res.status(500).send(err);
+        else {
+            if (!existingBook) res.status(404).send('Book not found');
+            else {
+                // Book exists, proceed with the delete
+                db.run('DELETE FROM books WHERE id = ?', req.params.id, function(err) {
+                    if (err) res.status(500).send(err);
+                    else  res.send({});
+                });
+            }
         }
-    });
+    })
 });
 
 const port = process.env.PORT || 3000;
