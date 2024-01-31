@@ -51,11 +51,13 @@ app.get('/books/:id', (req,res) => {
 // route to create a new book
 app.post('/books', (req,res) => {
     const book = req.body;
-    db.run('INSERT INTO books (title, author) VALUES (?, ?)', book.title, book.author, function(err) {
+    db.run('INSERT INTO books (id, title, author) VALUES (?, ?, ?)', book.id, book.title, book.author, function(err) {
         if (err){
             res.status(500).send(err);
         }else {
-            book.id = this.lastID;
+            if (book.id == null) {
+                book.id = this.lastID;
+            }
             res.send(book);
         }
     });
