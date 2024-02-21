@@ -10,12 +10,17 @@ const app = express(); // web app
 // parse incoming requests
 app.use(express.json()); // format to transfer data is json
 
-// create a connection to the database
-const sequelize = new Sequelize('database', 'username', 'password', {
-    host: 'localhost',
-    dialect: 'sqlite', // use format of sqlite
-    storage: './Database/SQBooks.sqlite' // database store at
-});
+// set db url
+const dbUrl = 'postgres://webadmin:KIAxki46081@node56970-chirawat-noderest.proen.app.ruk-com.cloud:11801/Books';
+// create a connectino to the database
+const sequelize = new Sequelize(dbUrl);
+
+// // create a connection to the database
+// const sequelize = new Sequelize('database', 'username', 'password', {
+//     host: 'localhost',
+//     dialect: 'sqlite', // use format of sqlite
+//     storage: './Database/SQBooks.sqlite' // database store at
+// });
 
 // define the Book model //* Important final
 const Book = sequelize.define('book', { // 'objectname', {object detail}
