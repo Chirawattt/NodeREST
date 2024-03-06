@@ -6,6 +6,10 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser'); // go-back json file
+const cors = require('cors');
+
+
+
 
 // Database connection
 mongoose.connect(
@@ -28,6 +32,7 @@ const Book = mongoose.model("Book", { // Book Model
 
 const app = express();
 app.use(bodyParser.json());
+app.use(cors());
 
 // Create
 app.post("/books", async (req, res) =>{
